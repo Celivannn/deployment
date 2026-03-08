@@ -6,6 +6,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 from products.models import Category, Product
 from orders.models import Cart, CartItem, Order, OrderItem
 from analytics.models import SalesAnalytics
@@ -264,7 +266,7 @@ def get_sales_analytics(request):
     serializer = SalesAnalyticsSerializer(analytics, many=True)
     return Response(serializer.data)
 
-# Admin User Management - ADD THIS NEW VIEW
+# Admin User Management
 @api_view(['GET'])
 @permission_classes([IsAdminUser])
 def get_all_users(request):
@@ -306,6 +308,7 @@ def delete_product(request, pk):
     except Product.DoesNotExist:
         return Response({'error': 'Product not found'}, status=status.HTTP_404_NOT_FOUND)
 
+# Admin Category Management
 @api_view(['POST'])
 @permission_classes([IsAdminUser])
 def create_category(request):
@@ -315,7 +318,6 @@ def create_category(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# Admin Category Management - ADD THESE NEW VIEWS
 @api_view(['PUT', 'PATCH'])
 @permission_classes([IsAdminUser])
 def update_category(request, pk):

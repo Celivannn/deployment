@@ -1,10 +1,11 @@
 from django.urls import path
+from django.views.decorators.csrf import csrf_exempt
 from . import views
 
 urlpatterns = [
-    # Authentication
-    path('auth/register/', views.register, name='register'),
-    path('auth/login/', views.login, name='login'),
+    # Authentication - exempt from CSRF
+    path('auth/register/', csrf_exempt(views.register), name='register'),
+    path('auth/login/', csrf_exempt(views.login), name='login'),
     path('auth/profile/', views.get_user_profile, name='profile'),
     
     # Products
@@ -34,5 +35,5 @@ urlpatterns = [
     path('admin/categories/create/', views.create_category, name='admin-category-create'),
     path('admin/categories/update/<int:pk>/', views.update_category, name='admin-category-update'),
     path('admin/categories/delete/<int:pk>/', views.delete_category, name='admin-category-delete'),
-    path('admin/users/', views.get_all_users, name='admin-users'),  # Add this line
+    path('admin/users/', views.get_all_users, name='admin-users'),
 ]

@@ -3,10 +3,7 @@ from django.urls import path, include, re_path
 from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic import TemplateView
-from django.contrib.staticfiles.views import serve
-from django.views.static import serve as static_serve
 from rest_framework_simplejwt.views import TokenRefreshView
-import os
 
 urlpatterns = [
     path('admin/', admin.site.urls),
