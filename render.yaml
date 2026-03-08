@@ -17,3 +17,15 @@ services:
         value: ".onrender.com"
       - key: PYTHON_VERSION
         value: "3.11.0"
+      - key: DB_ENGINE
+        value: "django.db.backends.mysql"
+      - key: DB_NAME
+        value: "railway"
+      - key: DB_USER
+        value: "root"
+      - key: DB_PASSWORD
+        value: "riDQCkLfXmGFLeLVWyaSRSnttOLHTBRJ"
+      - key: DB_HOST
+        value: "maglev.proxy.rlwy.net"
+      - key: DB_PORT
+        value: "46734"
