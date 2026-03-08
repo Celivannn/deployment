@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: minute-burger
+    runtime: python
+    repo: https://github.com/YOUR_USERNAME/MINUTEBURGER
+    plan: free
+    region: singapore
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
+    startCommand: gunicorn minuteburger.wsgi:application
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "false"
+      - key: ALLOWED_HOSTS
+        value: ".onrender.com"
+      - key: PYTHON_VERSION
+        value: "3.11.0"
