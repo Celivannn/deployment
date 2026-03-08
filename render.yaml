@@ -5,7 +5,7 @@ services:
     repo: https://github.com/Celivannn/deployment.git
     plan: free
     region: singapore
-    rootDir: PIT-Minute-Burger
+    rootDir: .  # Changed from PIT-Minute-Burger to .
     buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
     startCommand: gunicorn minuteburger.wsgi:application
     envVars:
