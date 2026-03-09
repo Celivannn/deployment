@@ -50,7 +50,8 @@ class CartItemSerializer(serializers.ModelSerializer):
         fields = ['id', 'product', 'product_id', 'quantity', 'price', 'subtotal', 'created_at']
     
     def get_subtotal(self, obj):
-        return obj.quantity * obj.price
+        # Convert Decimal to float for JSON serialization
+        return float(obj.quantity * obj.price)
 
 class CartSerializer(serializers.ModelSerializer):
     items = CartItemSerializer(many=True, read_only=True)
@@ -62,25 +63,35 @@ class CartSerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'session_id', 'items', 'total', 'item_count', 'created_at', 'updated_at']
     
     def get_total(self, obj):
-        return sum(item.quantity * item.price for item in obj.items.all())
+        # Calculate total as float
+        total = sum(float(item.quantity * item.price) for item in obj.items.all())
+        return total
     
     def get_item_count(self, obj):
         return sum(item.quantity for item in obj.items.all())
 
 class OrderItemSerializer(serializers.ModelSerializer):
     product_name = serializers.CharField(source='product.name', read_only=True)
+    subtotal = serializers.SerializerMethodField()
     
     class Meta:
         model = OrderItem
         fields = ['id', 'product', 'product_name', 'quantity', 'price', 'subtotal']
+    
+    def get_subtotal(self, obj):
+        return float(obj.quantity * obj.price)
 
 class OrderSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True, read_only=True)
     customer = UserSerializer(source='user', read_only=True)
+    total_amount = serializers.SerializerMethodField()
     
     class Meta:
         model = Order
         fields = '__all__'
+    
+    def get_total_amount(self, obj):
+        return float(obj.total_amount)
 
 class OrderCreateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -89,6 +100,15 @@ class OrderCreateSerializer(serializers.ModelSerializer):
                  'customer_email', 'special_instructions']
 
 class SalesAnalyticsSerializer(serializers.ModelSerializer):
+    total_revenue = serializers.SerializerMethodField()
+    average_order_value = serializers.SerializerMethodField()
+    
     class Meta:
         model = SalesAnalytics
         fields = '__all__'
+    
+    def get_total_revenue(self, obj):
+        return float(obj.total_revenue)
+    
+    def get_average_order_value(self, obj):
+        return float(obj.average_order_value)

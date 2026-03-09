@@ -77,19 +77,22 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'minuteburger.wsgi.application'
 
-# Database Configuration
+# Database Configuration - Using environment variables
 DATABASES = {
     'default': {
-        'ENGINE': os.environ.get('DB_ENGINE', 'django.db.backends.mysql'),
-        'NAME': os.environ.get('DB_NAME', 'minuteburger_db'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.environ.get('DB_NAME', 'railway'),
         'USER': os.environ.get('DB_USER', 'root'),
-        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
-        'HOST': os.environ.get('DB_HOST', 'localhost'),
-        'PORT': os.environ.get('DB_PORT', '3306'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', 'riDQCkLfXmGFLeLVWyaSRSnttOLHTBRJ'),
+        'HOST': os.environ.get('DB_HOST', 'maglev.proxy.rlwy.net'),
+        'PORT': os.environ.get('DB_PORT', '46734'),
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-            'connect_timeout': 10,
-        }
+            'connect_timeout': 30,
+            'charset': 'utf8mb4',
+            'use_unicode': True,
+        },
+        'CONN_MAX_AGE': 60,  # Keep connections alive for 60 seconds
     }
 }
 
@@ -125,12 +128,11 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 WHITENOISE_ROOT = os.path.join(BASE_DIR, 'static', 'dist')
 WHITENOISE_INDEX_FILE = True
 
-# Cloudinary configuration - Use environment variables
+# Cloudinary configuration
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
 
-# Configure Cloudinary using environment variables
 cloudinary.config(
     cloud_name=os.environ.get('CLOUDINARY_CLOUD_NAME'),
     api_key=os.environ.get('CLOUDINARY_API_KEY'),
@@ -138,9 +140,9 @@ cloudinary.config(
     secure=True
 )
 
-# Media files - now using Cloudinary
+# Media files - using Cloudinary
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-MEDIA_URL = '/media/'  # Keep for backward compatibility
+MEDIA_URL = '/media/'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -158,7 +160,7 @@ CSRF_TRUSTED_ORIGINS = [
     "https://*.onrender.com",
 ]
 
-# REST Framework settings
+# REST Framework settings - FIXED for Decimal serialization
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -167,7 +169,9 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10
+    'PAGE_SIZE': 10,
+    'COERCE_DECIMAL_TO_STRING': False,  # This prevents Decimal to string conversion
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json',  # Ensure JSON format for testing
 }
 
 # JWT Settings
@@ -176,6 +180,9 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
 }
 
 # Security settings for production
